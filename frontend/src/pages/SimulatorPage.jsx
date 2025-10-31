@@ -48,7 +48,7 @@ const SimulatorPage = () => {
 
       const newNode = {
         id: `node-${nodes.length + 1}`,
-        type: 'default',
+        type: 'custom',
         position,
         data: {
           label: componentData.name,
@@ -59,10 +59,8 @@ const SimulatorPage = () => {
           background: getCategoryColor(componentData.category),
           border: '2px solid #3b82f6',
           borderRadius: '8px',
-          padding: '10px',
-          width: 150,
-          fontSize: '12px',
-          fontWeight: 600
+          padding: '0px',
+          minWidth: 160
         }
       };
 
