@@ -22,7 +22,12 @@ const SimulatorPage = () => {
   const nodeTypes = useMemo(() => ({ custom: CustomNode }), []);
 
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge({ ...params, animated: true }, eds)),
+    (params) => setEdges((eds) => addEdge({ 
+      ...params, 
+      animated: true,
+      style: { stroke: '#3b82f6', strokeWidth: 2 },
+      type: 'smoothstep'
+    }, eds)),
     [setEdges]
   );
 
