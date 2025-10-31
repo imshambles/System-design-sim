@@ -1,9 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { ReactFlow, Background, Controls, MiniMap, addEdge, useNodesState, useEdgesState } from 'reactflow';
 import 'reactflow/dist/style.css';
 import ComponentPalette from '../components/simulator/ComponentPalette';
 import ConfigPanel from '../components/simulator/ConfigPanel';
 import ResultsPanel from '../components/simulator/ResultsPanel';
+import CustomNode from '../components/simulator/CustomNode';
 import { Button } from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Play, RotateCcw, Settings } from 'lucide-react';
@@ -16,6 +17,9 @@ const SimulatorPage = () => {
   const [selectedScenario, setSelectedScenario] = useState('url_shortener');
   const [simulationResults, setSimulationResults] = useState(null);
   const [showConfig, setShowConfig] = useState(false);
+
+  // Define custom node types
+  const nodeTypes = useMemo(() => ({ custom: CustomNode }), []);
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge({ ...params, animated: true }, eds)),
