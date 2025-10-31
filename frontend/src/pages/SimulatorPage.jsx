@@ -165,6 +165,7 @@ const SimulatorPage = () => {
             onNodeClick={onNodeClick}
             onDrop={onDrop}
             onDragOver={onDragOver}
+            nodeTypes={nodeTypes}
             fitView
             className="bg-slate-50"
           >
