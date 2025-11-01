@@ -2,25 +2,28 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { ReactFlow, Background, Controls, MiniMap, addEdge, useNodesState, useEdgesState, MarkerType } from 'reactflow';
 import 'reactflow/dist/style.css';
 import ComponentPalette from '../components/simulator/ComponentPalette';
+import LLDComponentPalette from '../components/simulator/LLDComponentPalette';
 import ConfigPanel from '../components/simulator/ConfigPanel';
 import ResultsPanel from '../components/simulator/ResultsPanel';
 import CustomNode from '../components/simulator/CustomNode';
+import LLDNode from '../components/simulator/LLDNode';
 import { Button } from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Play, RotateCcw, Settings } from 'lucide-react';
 import { SCENARIOS, MOCK_SIMULATION_RESULTS } from '../mock';
 
 const SimulatorPage = () => {
+  const [mode, setMode] = useState('HLD'); // 'HLD' or 'LLD'
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [selectedNode, setSelectedNode] = useState(null);
-  const [selectedScenario, setSelectedScenario] = useState('url_shortener');
-  const [simulationResults, setSimulationResults] = useState(null);
-  const [showConfig, setShowConfig] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
-  // Define custom node types
-  const nodeTypes = useMemo(() => ({ custom: CustomNode }), []);
+  // Define custom node types based on mode
+  const nodeTypes = useMemo(() => ({
+    custom: CustomNode,
+    lld: LLDNode,
+  }), []);
+
+  // Callback for ReactFlow edge creation
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge({ 
       ...params, 
@@ -34,10 +37,17 @@ const SimulatorPage = () => {
     }, eds)),
     [setEdges]
   );
+
   const onNodeClick = useCallback((event, node) => {
     setSelectedNode(node);
     setShowConfig(true);
   }, []);
+  const [selectedNode, setSelectedNode] = useState(null);
+  const [selectedScenario, setSelectedScenario] = useState('url_shortener');
+  const [simulationResults, setSimulationResults] = useState(null);
+  const [showConfig, setShowConfig] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const onDrop = useCallback(
     (event) => {
       event.preventDefault();
@@ -49,20 +59,20 @@ const SimulatorPage = () => {
       };
       const newNode = {
         id: `node-${nodes.length + 1}`,
-        type: 'custom',
+        type: mode === 'LLD' ? 'lld' : 'custom',
         position,
         data: {
           label: componentData.name,
           component: componentData,
-          instanceCount: 1
+          instanceCount: mode === 'HLD' ? 1 : undefined
         },
-        style: {
+        style: mode === 'HLD' ? {
           background: getCategoryColor(componentData.category),
           border: '2px solid #3b82f6',
           borderRadius: '8px',
           padding: '0px',
           minWidth: 160
-        }
+        } : undefined
       };
       setNodes((nds) => nds.concat(newNode));
     },
@@ -119,67 +129,49 @@ const SimulatorPage = () => {
     setNodes([]);
     setEdges([]);
     setSimulationResults(null);
-    setSelectedNode(null);
-    setShowConfig(false);
   };
 
-  const handleUpdateNode = (nodeId, updates) => {
+  const handleUpdateNode = useCallback((nodeId, newData) => {
     setNodes((nds) =>
-      nds.map((node) =>
-        node.id === nodeId
-          ? { ...node, data: { ...node.data, ...updates } }
-          : node
-      )
+      nds.map((node) => {
+        if (node.id === nodeId) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              ...newData,
+            },
+          };
+        }
+        return node;
+      })
     );
-  };
+  }, [setNodes]);
 
+  // Get scenario details
   const scenario = SCENARIOS[selectedScenario];
 
   return (
-    <div className="h-screen flex flex-col bg-slate-50">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-            <Settings className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-slate-900">System Design Simulator</h1>
-            <p className="text-xs text-slate-500">Build & validate your architecture</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <Select value={selectedScenario} onValueChange={setSelectedScenario}>
-            <SelectTrigger className="w-64">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.values(SCENARIOS).map((s) => (
-                <SelectItem key={s.id} value={s.id}>
-                  {s.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button onClick={handleRunSimulation} className="bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
-            {isLoading ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-            ) : (
-              <Play className="w-4 h-4 mr-2" />
-            )}
-            {isLoading ? 'Running...' : 'Run Simulation'}
-          </Button>
-          <Button onClick={handleReset} variant="outline">
-            <RotateCcw className="w-4 h-4 mr-2" />
-            Reset
-          </Button>
-        </div>
-      </header>
-
+    <div className="flex flex-col h-full">
+      {/* Mode Selector UI */}
+      <div className="flex items-center justify-center gap-4 p-4 border-b bg-slate-50">
+        <Button
+          variant={mode === 'HLD' ? 'default' : 'outline'}
+          onClick={() => setMode('HLD')}
+        >
+          HLD Mode
+        </Button>
+        <Button
+          variant={mode === 'LLD' ? 'default' : 'outline'}
+          onClick={() => setMode('LLD')}
+        >
+          LLD Mode
+        </Button>
+      </div>
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Component Palette */}
-        <ComponentPalette />
+        {mode === 'HLD' ? <ComponentPalette /> : <LLDComponentPalette />}
 
         {/* Canvas */}
         <div className="flex-1 relative">

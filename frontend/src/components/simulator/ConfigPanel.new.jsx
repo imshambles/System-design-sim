@@ -8,10 +8,6 @@ import { ScrollArea } from '../ui/scroll-area';
 import LLDConfigPanel from './LLDConfigPanel';
 
 const HLDConfigPanel = ({ node, onUpdate }) => {
-  if (!node?.data?.component?.performance) {
-    return <div className="p-4 text-slate-500">No configuration available</div>;
-  }
-
   const component = node.data.component;
   const [instanceCount, setInstanceCount] = useState(node.data.instanceCount || 1);
   const [config, setConfig] = useState({});
@@ -151,8 +147,7 @@ const HLDConfigPanel = ({ node, onUpdate }) => {
 };
 
 const ConfigPanel = ({ node, onUpdate, onClose }) => {
-  // Check both node type and component type to determine if it's LLD
-  const isLLD = node.type === 'lld' || node.data?.component?.type === 'class' || node.data?.component?.type === 'interface' || node.data?.component?.type === 'design_pattern';
+  const isLLD = node.type === 'lld';
 
   return (
     <div className="w-80 bg-white border-l border-slate-200 flex flex-col">
