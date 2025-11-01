@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { ReactFlow, Background, Controls, MiniMap, addEdge, useNodesState, useEdgesState } from 'reactflow';
+import { ReactFlow, Background, Controls, MiniMap, addEdge, useNodesState, useEdgesState, MarkerType } from 'reactflow';
 import 'reactflow/dist/style.css';
 import ComponentPalette from '../components/simulator/ComponentPalette';
 import ConfigPanel from '../components/simulator/ConfigPanel';
@@ -17,25 +17,27 @@ const SimulatorPage = () => {
   const [selectedScenario, setSelectedScenario] = useState('url_shortener');
   const [simulationResults, setSimulationResults] = useState(null);
   const [showConfig, setShowConfig] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Define custom node types
   const nodeTypes = useMemo(() => ({ custom: CustomNode }), []);
-
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge({ 
       ...params, 
       animated: true,
       style: { stroke: '#3b82f6', strokeWidth: 2 },
-      type: 'smoothstep'
+      type: 'smoothstep',
+      markerEnd: {
+        type: MarkerType.ArrowClosed,
+        color: '#3b82f6',
+      },
     }, eds)),
     [setEdges]
   );
-
   const onNodeClick = useCallback((event, node) => {
     setSelectedNode(node);
     setShowConfig(true);
   }, []);
-
   const onDrop = useCallback(
     (event) => {
       event.preventDefault();
@@ -45,7 +47,6 @@ const SimulatorPage = () => {
         x: event.clientX - reactFlowBounds.left - 75,
         y: event.clientY - reactFlowBounds.top - 40,
       };
-
       const newNode = {
         id: `node-${nodes.length + 1}`,
         type: 'custom',
@@ -63,17 +64,14 @@ const SimulatorPage = () => {
           minWidth: 160
         }
       };
-
       setNodes((nds) => nds.concat(newNode));
     },
     [nodes, setNodes]
   );
-
   const onDragOver = useCallback((event) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   }, []);
-
   const getCategoryColor = (category) => {
     const colors = {
       compute: '#dbeafe',
@@ -85,11 +83,36 @@ const SimulatorPage = () => {
     return colors[category] || '#f3f4f6';
   };
 
-  const handleRunSimulation = () => {
-    // Mock simulation - in real app this would calculate actual bottlenecks
-    setTimeout(() => {
-      setSimulationResults(MOCK_SIMULATION_RESULTS);
-    }, 1000);
+  const handleRunSimulation = async () => {
+    setIsLoading(true);
+    setSimulationResults(null);
+
+    const simulationData = {
+      scenario: selectedScenario,
+      nodes: nodes.map(node => ({ id: node.id, ...node.data })),
+      edges: edges.map(edge => ({
+        id: edge.id,
+        source: edge.source,
+        target: edge.target
+      }))
+    };
+
+    try {
+      const response = await fetch('http://localhost:8000/api/simulate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(simulationData)
+      });
+      const results = await response.json();
+      setSimulationResults(results);
+    } catch (error) {
+      console.error("Error running simulation:", error);
+      // Handle error state appropriately
+    }
+
+    setIsLoading(false);
   };
 
   const handleReset = () => {
@@ -138,9 +161,13 @@ const SimulatorPage = () => {
               ))}
             </SelectContent>
           </Select>
-          <Button onClick={handleRunSimulation} className="bg-blue-600 hover:bg-blue-700">
-            <Play className="w-4 h-4 mr-2" />
-            Run Simulation
+          <Button onClick={handleRunSimulation} className="bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
+            {isLoading ? (
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+            ) : (
+              <Play className="w-4 h-4 mr-2" />
+            )}
+            {isLoading ? 'Running...' : 'Run Simulation'}
           </Button>
           <Button onClick={handleReset} variant="outline">
             <RotateCcw className="w-4 h-4 mr-2" />

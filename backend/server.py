@@ -1,7 +1,7 @@
 from fastapi import FastAPI, APIRouter
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
+# from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from pathlib import Path
@@ -9,15 +9,19 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import List
 import uuid
 from datetime import datetime, timezone
+import google.generativeai as genai
 
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# # MongoDB connection
+# mongo_url = os.environ['MONGO_URL']
+# client = AsyncIOMotorClient(mongo_url)
+# db = client[os.environ['DB_NAME']]
+
+# Gemini API Key
+genai.configure(api_key="AIzaSyC8KL0NavHtXc1sBLvj8cJXP_I2hEpfh18")
 
 # Create the main app without a prefix
 app = FastAPI()
@@ -37,34 +41,51 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
+class SimulationRequest(BaseModel):
+    scenario: str
+    nodes: List[dict]
+    edges: List[dict]
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
     return {"message": "Hello World"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
+# @api_router.post("/status", response_model=StatusCheck)
+# async def create_status_check(input: StatusCheckCreate):
+#     status_dict = input.model_dump()
+#     status_obj = StatusCheck(**status_dict)
     
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
+#     # Convert to dict and serialize datetime to ISO string for MongoDB
+#     doc = status_obj.model_dump()
+#     doc['timestamp'] = doc['timestamp'].isoformat()
     
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
+#     _ = await db.status_checks.insert_one(doc)
+#     return status_obj
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
+# @api_router.get("/status", response_model=List[StatusCheck])
+# async def get_status_checks():
+#     # Exclude MongoDB's _id field from the query results
+#     status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
     
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
+#     # Convert ISO string timestamps back to datetime objects
+#     for check in status_checks:
+#         if isinstance(check['timestamp'], str):
+#             check['timestamp'] = datetime.fromisoformat(check['timestamp'])
     
-    return status_checks
+#     return status_checks
+
+@api_router.post("/simulate")
+async def run_simulation(request: SimulationRequest):
+    # In a real application, you would use the request data to run a simulation.
+    # For now, we'll just return the mock results.
+    # from frontend.src.mock import MOCK_SIMULATION_RESULTS
+    # return MOCK_SIMULATION_RESULTS
+    json_payload = request.model_dump_json()
+    logger.info(f"Sending JSON to LLM: {json_payload}")
+    model = genai.GenerativeModel('gemini-2.5-pro')
+    response = model.generate_content(json_payload)
+    return {"message": response.text}
 
 # Include the router in the main app
 app.include_router(api_router)
@@ -84,6 +105,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    client.close()
+# @app.on_event("shutdown")
+# async def shutdown_db_client():
+#     client.close()
