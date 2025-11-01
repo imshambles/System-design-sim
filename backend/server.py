@@ -21,7 +21,7 @@ load_dotenv(ROOT_DIR / '.env')
 # db = client[os.environ['DB_NAME']]
 
 # Gemini API Key
-genai.configure(api_key="AIzaSyC8KL0NavHtXc1sBLvj8cJXP_I2hEpfh18")
+genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 
 # Create the main app without a prefix
 app = FastAPI()
