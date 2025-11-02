@@ -10,9 +10,26 @@ import LLDNode from '../components/simulator/LLDNode';
 import { Button } from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Play, RotateCcw, Settings } from 'lucide-react';
-import { SCENARIOS, MOCK_SIMULATION_RESULTS } from '../mock';
+import { ScrollArea } from '../components/ui/scroll-area';
+import { Badge } from '../components/ui/badge';
+import { SCENARIOS } from '../mock';
 import { QUESTIONS } from '../mock/questions.js';
-import QuestionSelector from '../components/simulator/QuestionSelector';
+
+// Helper function to get the color for difficulty badges
+const getDifficultyColor = (difficulty) => {
+  switch (difficulty) {
+    case 'Easy':
+      return 'bg-green-100 text-green-800';
+    case 'Medium':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'Hard':
+      return 'bg-red-100 text-red-800';
+    default:
+      return 'bg-gray-100 text-gray-800';
+  }
+};
+import ApiKeyDialog from '../components/simulator/ApiKeyDialog';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Styles for ReactFlow container
 const reactFlowDefaultStyles = {
@@ -20,10 +37,20 @@ const reactFlowDefaultStyles = {
   width: '100%'
 };
 
+// Styles for SelectItem to ensure consistent height and alignment
+const selectItemStyles = {
+  height: '40px',
+  padding: '0 8px',
+  display: 'flex',
+  alignItems: 'center',
+  transition: 'background-color 150ms',
+};
+
 const SimulatorPage = () => {
   const [mode, setMode] = useState('HLD'); // 'HLD' or 'LLD'
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [showApiKeyDialog, setShowApiKeyDialog] = useState(false);
 
   // Define custom node types based on mode
   const nodeTypes = useMemo(() => ({
@@ -101,7 +128,17 @@ const SimulatorPage = () => {
     return colors[category] || '#f3f4f6';
   };
 
+  const handleSaveApiKey = (apiKey) => {
+    localStorage.setItem('apiKey', apiKey);
+  };
+
   const handleRunSimulation = async () => {
+    const apiKey = localStorage.getItem('apiKey');
+    if (!apiKey) {
+      setShowApiKeyDialog(true);
+      return;
+    }
+
     setIsLoading(true);
     setSimulationResults(null);
 
@@ -116,18 +153,26 @@ const SimulatorPage = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:8000/api/simulate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(simulationData)
-      });
-      const results = await response.json();
-      setSimulationResults(results);
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro"});
+      const prompt = `Simulate a system design for the following scenario: ${JSON.stringify(simulationData)}. Provide a detailed analysis of the design, including potential bottlenecks, scalability issues, and suggestions for improvement. Return the response as a JSON object with the following structure: { "analysis": "<your_analysis_here>", "bottlenecks": [{"component": "<component_name>", "issue": "<issue_description>"}], "suggestions": [{"component": "<component_name>", "suggestion": "<suggestion_description>"}] }`;
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.candidates[0].content.parts[0].text;
+      const jsonStart = text.indexOf('{');
+      const jsonEnd = text.lastIndexOf('}');
+      const jsonString = text.substring(jsonStart, jsonEnd + 1);
+      setSimulationResults(JSON.parse(jsonString));
     } catch (error) {
       console.error("Error running simulation:", error);
-      // Handle error state appropriately
+      setSimulationResults({
+        analysis: "An error occurred while running the simulation. This could be due to:\n\n" +
+                 "1. Invalid API key\n" +
+                 "2. Network connectivity issues\n" +
+                 "3. Service unavailability\n\n" +
+                 "Please try again or check your API key in settings.",
+        error: true
+      });
     }
 
     setIsLoading(false);
@@ -176,8 +221,58 @@ const SimulatorPage = () => {
           >
             LLD Mode
           </Button>
+          <div className="w-[300px]">
+            <Select value={selectedScenario} onValueChange={setSelectedScenario}>
+              <SelectTrigger className="w-full">
+                <SelectValue>
+                  {QUESTIONS[selectedScenario]?.title || "Select a question"}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {(() => {
+                  const filteredQuestions = Object.values(QUESTIONS).filter(q => q.type === mode);
+                  const itemHeight = 40; // Height of each item in pixels
+                  const maxVisibleItems = 5;
+                  const contentHeight = Math.min(filteredQuestions.length, maxVisibleItems) * itemHeight;
+                  const needsScroll = filteredQuestions.length > maxVisibleItems;
+
+                  return (
+                    <ScrollArea className={`${needsScroll ? `h-[${maxVisibleItems * itemHeight}px]` : ''}`}>
+                      <div className={`py-1 ${!needsScroll ? 'h-fit' : ''}`}>
+                        {filteredQuestions.map(question => (
+                          <SelectItem 
+                            key={question.id} 
+                            value={question.id}
+                            className="h-[40px]"
+                          >
+                            <div className="flex items-center justify-between w-full pr-4">
+                              <span>{question.title}</span>
+                              <Badge 
+                                variant="outline"
+                                className={getDifficultyColor(question.difficulty)}
+                              >
+                                {question.difficulty}
+                              </Badge>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  );
+                })()}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         <div className="flex items-center gap-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowApiKeyDialog(true)}
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            Enter your LLM API Key
+          </Button>
           <Button
             variant="outline"
             size="sm"
@@ -204,12 +299,6 @@ const SimulatorPage = () => {
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
         <div className="flex flex-shrink-0">
-          {/* Question Selector */}
-          <QuestionSelector
-            selectedQuestionId={selectedScenario}
-            onQuestionSelect={setSelectedScenario}
-            mode={mode}
-          />
           {/* Component Palette */}
           {mode === 'HLD' ? <ComponentPalette /> : <LLDComponentPalette />}
         </div>
@@ -278,6 +367,11 @@ const SimulatorPage = () => {
           <ResultsPanel results={simulationResults} />
         ) : null}
       </div>
+      <ApiKeyDialog
+        open={showApiKeyDialog}
+        onClose={() => setShowApiKeyDialog(false)}
+        onSave={handleSaveApiKey}
+      />
     </div>
   );
 };

@@ -380,33 +380,7 @@ export const SCENARIOS = {
   }
 };
 
-// Mock simulation results
-export const MOCK_SIMULATION_RESULTS = {
-  traffic: {
-    totalRPS: 2314,
-    peakRPS: 6944,
-    breakdown: [
-      { operation: 'Redirect', rps: 6597, percentage: 95 },
-      { operation: 'Shorten URL', rps: 347, percentage: 5 }
-    ]
-  },
-  bottlenecks: [
-    {
-      id: '1',
-      componentId: 'node-1',
-      componentName: 'PostgreSQL',
-      severity: 'warning',
-      type: 'READ_THROUGHPUT_EXCEEDED',
-      message: 'Read throughput at 85% capacity',
-      current: 8500,
-      capacity: 10000,
-      suggestion: 'Add 1-2 read replicas to distribute read load'
-    }
-  ],
-  status: 'success',
-  estimatedCost: 456.50,
-  availability: 0.9989
-};
+
 
 // LLD Component Specifications
 export const LLD_COMPONENT_SPECS = {
