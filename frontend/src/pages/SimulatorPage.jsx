@@ -11,6 +11,14 @@ import { Button } from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Play, RotateCcw, Settings } from 'lucide-react';
 import { SCENARIOS, MOCK_SIMULATION_RESULTS } from '../mock';
+import { QUESTIONS } from '../mock/questions.js';
+import QuestionSelector from '../components/simulator/QuestionSelector';
+
+// Styles for ReactFlow container
+const reactFlowDefaultStyles = {
+  height: '100%',
+  width: '100%'
+};
 
 const SimulatorPage = () => {
   const [mode, setMode] = useState('HLD'); // 'HLD' or 'LLD'
@@ -152,29 +160,62 @@ const SimulatorPage = () => {
   const scenario = SCENARIOS[selectedScenario];
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Mode Selector UI */}
-      <div className="flex items-center justify-center gap-4 p-4 border-b bg-slate-50">
-        <Button
-          variant={mode === 'HLD' ? 'default' : 'outline'}
-          onClick={() => setMode('HLD')}
-        >
-          HLD Mode
-        </Button>
-        <Button
-          variant={mode === 'LLD' ? 'default' : 'outline'}
-          onClick={() => setMode('LLD')}
-        >
-          LLD Mode
-        </Button>
+    <div className="flex flex-col h-screen">
+      {/* Top Control Bar */}
+      <div className="flex items-center justify-between p-4 border-b bg-slate-50">
+        <div className="flex items-center gap-4">
+          <Button
+            variant={mode === 'HLD' ? 'default' : 'outline'}
+            onClick={() => setMode('HLD')}
+          >
+            HLD Mode
+          </Button>
+          <Button
+            variant={mode === 'LLD' ? 'default' : 'outline'}
+            onClick={() => setMode('LLD')}
+          >
+            LLD Mode
+          </Button>
+        </div>
+        <div className="flex items-center gap-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleReset}
+          >
+            <RotateCcw className="w-4 h-4 mr-2" />
+            Reset
+          </Button>
+          <Button
+            variant="default"
+            size="sm"
+            onClick={handleRunSimulation}
+            disabled={isLoading || nodes.length === 0}
+          >
+            {isLoading ? (
+              <span className="animate-spin mr-2">⌛</span>
+            ) : (
+              <Play className="w-4 h-4 mr-2" />
+            )}
+            Run Simulation
+          </Button>
+        </div>
       </div>
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Component Palette */}
-        {mode === 'HLD' ? <ComponentPalette /> : <LLDComponentPalette />}
+        <div className="flex flex-shrink-0">
+          {/* Question Selector */}
+          <QuestionSelector
+            selectedQuestionId={selectedScenario}
+            onQuestionSelect={setSelectedScenario}
+            mode={mode}
+          />
+          {/* Component Palette */}
+          {mode === 'HLD' ? <ComponentPalette /> : <LLDComponentPalette />}
+        </div>
 
         {/* Canvas */}
-        <div className="flex-1 relative">
+        <div className="flex-1 relative min-w-[600px] h-full">
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -186,7 +227,7 @@ const SimulatorPage = () => {
             onDragOver={onDragOver}
             nodeTypes={nodeTypes}
             fitView
-            className="bg-slate-50"
+            className="bg-slate-50 h-full w-full"
           >
             <Background color="#cbd5e1" gap={16} />
             <Controls />
@@ -196,29 +237,30 @@ const SimulatorPage = () => {
             />
           </ReactFlow>
 
-          {/* Scenario Info Overlay */}
-          {scenario && (
+          {/* Question Info Overlay */}
+          {QUESTIONS[selectedScenario] && (
             <div className="absolute top-4 left-4 bg-white rounded-lg shadow-lg p-4 max-w-sm border border-slate-200">
-              <h3 className="font-bold text-slate-900 mb-1">{scenario.name}</h3>
-              <p className="text-xs text-slate-600 mb-3">{scenario.description}</p>
-              <div className="space-y-1 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Daily Users:</span>
-                  <span className="font-medium text-slate-900">
-                    {(scenario.requirements.dailyActiveUsers / 1000000).toFixed(1)}M
-                  </span>
+              <h3 className="font-bold text-slate-900 mb-1">{QUESTIONS[selectedScenario].title}</h3>
+              <p className="text-xs text-slate-600 mb-3">{QUESTIONS[selectedScenario].description}</p>
+              <div className="space-y-2 text-xs">
+                <div>
+                  <h4 className="font-semibold text-slate-700 mb-1">Requirements:</h4>
+                  <ul className="list-disc list-inside space-y-1">
+                    {QUESTIONS[selectedScenario].requirements.map((req, index) => (
+                      <li key={index} className="text-slate-600">{req}</li>
+                    ))}
+                  </ul>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Target Latency (p99):</span>
-                  <span className="font-medium text-slate-900">
-                    {scenario.requirements.targetLatency.p99}ms
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Data Size:</span>
-                  <span className="font-medium text-slate-900">
-                    {scenario.requirements.estimatedDataSize}
-                  </span>
+                <div>
+                  <h4 className="font-semibold text-slate-700 mb-1">Constraints:</h4>
+                  <div className="space-y-1">
+                    {Object.entries(QUESTIONS[selectedScenario].constraints).map(([key, value], index) => (
+                      <div key={index} className="flex justify-between">
+                        <span className="text-slate-500">{key.replace(/([A-Z])/g, ' $1').trim()}:</span>
+                        <span className="font-medium text-slate-900">{value}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>

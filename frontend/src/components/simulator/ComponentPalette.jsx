@@ -1,8 +1,10 @@
 import React from 'react';
 import { COMPONENT_SPECS } from '../../mock';
 import * as Icons from 'lucide-react';
+import { Button } from '../ui/button';
 
 const ComponentPalette = () => {
+  const [isCollapsed, setIsCollapsed] = React.useState(false);
   const categories = [
     { name: 'Infrastructure', key: 'infrastructure', color: 'bg-emerald-100 text-emerald-700' },
     { name: 'Compute', key: 'compute', color: 'bg-blue-100 text-blue-700' },
@@ -22,14 +24,34 @@ const ComponentPalette = () => {
   };
 
   return (
-    <div className="w-64 bg-white border-r border-slate-200 overflow-y-auto">
-      <div className="p-4 border-b border-slate-200">
-        <h2 className="font-bold text-slate-900">Components</h2>
-        <p className="text-xs text-slate-500 mt-1">Drag to canvas</p>
+    <div className={`bg-white border-r border-slate-200 overflow-y-auto transition-all duration-300 flex-shrink-0 ${
+      isCollapsed ? 'w-12' : 'w-64'
+    }`}>
+      <div className="p-4 border-b border-slate-200 flex items-center justify-between relative">
+        {!isCollapsed ? (
+          <div>
+            <h2 className="font-bold text-slate-900">Components</h2>
+            <p className="text-xs text-slate-500 mt-1">Drag to canvas</p>
+          </div>
+        ) : (
+          <div className="flex-1 flex justify-center">
+            <span className="font-bold text-slate-900 transform -rotate-90 whitespace-nowrap origin-center translate-y-8">
+              Components
+            </span>
+          </div>
+        )}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className={`${isCollapsed ? 'rotate-180' : ''} transition-transform absolute right-2 z-10`}
+        >
+          <Icons.ChevronRight className="h-4 w-4" />
+        </Button>
       </div>
 
       <div className="p-3 space-y-4">
-        {categories.map((category) => {
+        {!isCollapsed && categories.map((category) => {
           const components = Object.values(COMPONENT_SPECS).filter(
             (c) => c.category === category.key
           );
