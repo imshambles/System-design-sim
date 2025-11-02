@@ -4,7 +4,7 @@ import SimulatorPage from "./pages/SimulatorPage";
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/System-design-sim">
       <Routes>
         <Route path="/" element={<SimulatorPage />} />
       </Routes>
