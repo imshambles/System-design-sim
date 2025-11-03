@@ -22,7 +22,7 @@ const HLDConfigPanel = ({ node, onUpdate }) => {
           <div className="flex justify-between">
             <span className="text-slate-500">Availability:</span>
             <span className="font-medium text-slate-900">
-              {(component.performance.baseAvailability * 100).toFixed(2)}%
+              {(component.performance?.baseAvailability * 100).toFixed(2)}%
             </span>
           </div>
           {component.performance.maxRPS && (
@@ -36,7 +36,7 @@ const HLDConfigPanel = ({ node, onUpdate }) => {
           <div className="flex justify-between">
             <span className="text-slate-500">Cost/hour:</span>
             <span className="font-medium text-slate-900">
-              ${component.cost.hourly.toFixed(2)}
+              ${component.cost?.hourly.toFixed(2)}
             </span>
           </div>
         </div>

@@ -68,7 +68,7 @@ const LLDNode = ({ data }) => {
       <Handle
         type="target"
         position={Position.Top}
-        className="!bg-slate-500"
+        className="!bg-slate-500 connecting"
       />
 
       {/* Header */}
@@ -123,7 +123,7 @@ const LLDNode = ({ data }) => {
       <Handle
         type="source"
         position={Position.Bottom}
-        className="!bg-slate-500"
+        className="!bg-slate-500 connecting"
       />
     </div>
   );

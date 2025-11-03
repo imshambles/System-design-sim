@@ -113,3 +113,31 @@ code {
         border-bottom-color: inherit;
     }
 }
+
+.react-flow__handle.connecting {
+    background: #ff4d4d;
+    border-color: #ff4d4d;
+    animation: bounce 0.5s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.5);
+    }
+}
+
+.react-flow__connection-path {
+    stroke: #ff4d4d;
+    stroke-width: 2;
+}
+
+.react-flow__connection.valid {
+    stroke: #3b82f6;
+}
+
+.react-flow__node.target {
+    box-shadow: 0 0 10px #3b82f6;
+}

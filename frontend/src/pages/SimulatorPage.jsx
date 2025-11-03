@@ -142,9 +142,17 @@ const SimulatorPage = () => {
     setIsLoading(true);
     setSimulationResults(null);
 
+    const connectedNodes = new Set();
+    edges.forEach(edge => {
+      connectedNodes.add(edge.source);
+      connectedNodes.add(edge.target);
+    });
+
+    const nodesToSend = nodes.filter(node => connectedNodes.has(node.id));
+
     const simulationData = {
       scenario: selectedScenario,
-      nodes: nodes.map(node => ({ id: node.id, ...node.data })),
+      nodes: nodesToSend.map(node => ({ id: node.id, ...node.data })),
       edges: edges.map(edge => ({
         id: edge.id,
         source: edge.source,
@@ -154,7 +162,7 @@ const SimulatorPage = () => {
 
     try {
       const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro"});
+      const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
       const prompt = `Simulate a system design for the following scenario: ${JSON.stringify(simulationData)}. Provide a detailed analysis of the design, including potential bottlenecks, scalability issues, and suggestions for improvement. Return the response as a JSON object with the following structure: { "analysis": "<your_analysis_here>", "bottlenecks": [{"component": "<component_name>", "issue": "<issue_description>"}], "suggestions": [{"component": "<component_name>", "suggestion": "<suggestion_description>"}] }`;
       const result = await model.generateContent(prompt);
       const response = await result.response;
@@ -316,7 +324,8 @@ const SimulatorPage = () => {
             onDragOver={onDragOver}
             nodeTypes={nodeTypes}
             fitView
-            className="bg-slate-50 h-full w-full"
+            connectionRadius={50}
+            className="bg-slate-50 h-full w-full connection-status"
           >
             <Background color="#cbd5e1" gap={16} />
             <Controls />
