@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/System-design-sim/static/css/main.12fd361b.css",
-    "main.js": "/System-design-sim/static/js/main.fb24cc81.js",
+    "main.css": "/System-design-sim/static/css/main.f3dc0fd2.css",
+    "main.js": "/System-design-sim/static/js/main.65afe879.js",
     "index.html": "/System-design-sim/index.html",
-    "main.12fd361b.css.map": "/System-design-sim/static/css/main.12fd361b.css.map",
-    "main.fb24cc81.js.map": "/System-design-sim/static/js/main.fb24cc81.js.map"
+    "main.f3dc0fd2.css.map": "/System-design-sim/static/css/main.f3dc0fd2.css.map",
+    "main.65afe879.js.map": "/System-design-sim/static/js/main.65afe879.js.map"
   },
   "entrypoints": [
-    "static/css/main.12fd361b.css",
-    "static/js/main.fb24cc81.js"
+    "static/css/main.f3dc0fd2.css",
+    "static/js/main.65afe879.js"
   ]
 }
