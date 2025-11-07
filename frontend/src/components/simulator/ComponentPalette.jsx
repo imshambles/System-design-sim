@@ -24,78 +24,100 @@ const ComponentPalette = () => {
   };
 
   return (
-    <div className={`bg-white border-r border-slate-200 overflow-y-auto transition-all duration-300 flex-shrink-0 ${
-      isCollapsed ? 'w-12' : 'w-64'
-    }`}>
-      <div className="p-4 border-b border-slate-200 flex items-center justify-between relative">
-        {!isCollapsed ? (
-          <div>
-            <h2 className="font-bold text-slate-900">Components</h2>
-            <p className="text-xs text-slate-500 mt-1">Drag to canvas</p>
+    <div 
+      className={`bg-white border-r border-slate-200 overflow-y-auto transition-all duration-300 flex-shrink-0 ${
+        isCollapsed ? 'w-16' : 'w-64'
+      }`}
+      style={{ minWidth: isCollapsed ? '4rem' : '16rem' }}
+    >
+      <div className="border-b border-slate-200">
+        {isCollapsed ? (
+          <div className="flex flex-col items-center py-4 gap-3">
+            <div 
+              className="text-sm font-bold text-slate-900 whitespace-nowrap"
+              style={{ 
+                writingMode: 'vertical-rl', 
+                textOrientation: 'mixed',
+                transform: 'rotate(180deg)'
+              }}
+            >
+              Components
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className="transition-transform flex-shrink-0 h-8 w-8 p-0"
+            >
+              <Icons.ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
         ) : (
-          <div className="flex-1 flex justify-center">
-            <span className="font-bold text-slate-900 transform -rotate-90 whitespace-nowrap origin-center translate-y-8">
-              Components
-            </span>
+          <div className="p-4 flex items-center justify-between">
+            <div>
+              <h2 className="font-bold text-slate-900">Components</h2>
+              <p className="text-xs text-slate-500 mt-1">Drag to canvas</p>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className="transition-transform flex-shrink-0 h-8 w-8 p-0"
+            >
+              <Icons.ChevronLeft className="h-4 w-4" />
+            </Button>
           </div>
         )}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className={`${isCollapsed ? 'rotate-180' : ''} transition-transform absolute right-2 z-10`}
-        >
-          <Icons.ChevronRight className="h-4 w-4" />
-        </Button>
       </div>
 
-      <div className="p-3 space-y-4">
-        {!isCollapsed && categories.map((category) => {
-          const components = Object.values(COMPONENT_SPECS).filter(
-            (c) => c.category === category.key
-          );
+      {!isCollapsed && (
+        <div className="p-3 space-y-4">
+          {categories.map((category) => {
+            const components = Object.values(COMPONENT_SPECS).filter(
+              (c) => c.category === category.key
+            );
 
-          if (components.length === 0) return null;
+            if (components.length === 0) return null;
 
-          return (
-            <div key={category.key}>
-              <div className={`text-xs font-semibold px-2 py-1 rounded ${category.color} mb-2`}>
-                {category.name}
-              </div>
-              <div className="space-y-2">
-                {components.map((component) => {
-                  const Icon = getIcon(component.icon);
-                  return (
-                    <div
-                      key={component.id}
-                      draggable
-                      onDragStart={(e) => onDragStart(e, component)}
-                      className="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:border-blue-400 hover:shadow-md cursor-move transition-all"
-                    >
-                      <div className="w-8 h-8 rounded bg-slate-100 flex items-center justify-center flex-shrink-0">
-                        <Icon className="w-4 h-4 text-slate-600" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-xs font-medium text-slate-900 truncate">
-                          {component.name}
+            return (
+              <div key={category.key}>
+                <div className={`text-xs font-semibold px-2 py-1 rounded ${category.color} mb-2`}>
+                  {category.name}
+                </div>
+                <div className="space-y-2">
+                  {components.map((component) => {
+                    const Icon = getIcon(component.icon);
+                    return (
+                      <div
+                        key={component.id}
+                        draggable
+                        onDragStart={(e) => onDragStart(e, component)}
+                        className="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:border-blue-400 hover:shadow-md cursor-move transition-all"
+                      >
+                        <div className="w-8 h-8 rounded bg-slate-100 flex items-center justify-center flex-shrink-0">
+                          <Icon className="w-4 h-4 text-slate-600" />
                         </div>
-                        <div className="text-xs text-slate-500">
-                          {component.performance.maxRPS
-                            ? `${(component.performance.maxRPS / 1000).toFixed(0)}K RPS`
-                            : component.performance.maxReadQPS
-                            ? `${(component.performance.maxReadQPS / 1000).toFixed(0)}K QPS`
-                            : 'Scalable'}
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs font-medium text-slate-900 truncate">
+                            {component.name}
+                          </div>
+                          <div className="text-xs text-slate-500">
+                            {component.performance.maxRPS
+                              ? `${(component.performance.maxRPS / 1000).toFixed(0)}K RPS`
+                              : component.performance.maxReadQPS
+                              ? `${(component.performance.maxReadQPS / 1000).toFixed(0)}K QPS`
+                              : 'Scalable'}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

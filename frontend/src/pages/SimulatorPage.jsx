@@ -9,27 +9,20 @@ import CustomNode from '../components/simulator/CustomNode';
 import LLDNode from '../components/simulator/LLDNode';
 import { Button } from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Play, RotateCcw, Settings } from 'lucide-react';
-import { ScrollArea } from '../components/ui/scroll-area';
-import { Badge } from '../components/ui/badge';
-import { SCENARIOS } from '../mock';
-import { QUESTIONS } from '../mock/questions.js';
-
-// Helper function to get the color for difficulty badges
-const getDifficultyColor = (difficulty) => {
-  switch (difficulty) {
-    case 'Easy':
-      return 'bg-green-100 text-green-800';
-    case 'Medium':
-      return 'bg-yellow-100 text-yellow-800';
-    case 'Hard':
-      return 'bg-red-100 text-red-800';
-    default:
-      return 'bg-gray-100 text-gray-800';
-  }
-};
+import { Play, RotateCcw, Settings, HelpCircle } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../components/ui/dialog';
+import OptimizationGuide from '../components/simulator/OptimizationGuide';
 import ApiKeyDialog from '../components/simulator/ApiKeyDialog';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { ScrollArea } from '../components/ui/scroll-area';
+import { Badge } from '../components/ui/badge';
+import { QUESTIONS } from '../mock/questions.js';
 
 // Styles for ReactFlow container
 const reactFlowDefaultStyles = {
@@ -51,6 +44,20 @@ const SimulatorPage = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [showApiKeyDialog, setShowApiKeyDialog] = useState(false);
+
+  // Helper function to get the color for difficulty badges
+  const getDifficultyColor = (difficulty) => {
+    switch (difficulty) {
+      case 'Easy':
+        return 'bg-green-100 text-green-800';
+      case 'Medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'Hard':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
 
   // Define custom node types based on mode
   const nodeTypes = useMemo(() => ({
@@ -209,9 +216,6 @@ const SimulatorPage = () => {
     );
   }, [setNodes]);
 
-  // Get scenario details
-  const scenario = SCENARIOS[selectedScenario];
-
   return (
     <div className="flex flex-col h-screen">
       {/* Top Control Bar */}
@@ -273,6 +277,20 @@ const SimulatorPage = () => {
           </div>
         </div>
         <div className="flex items-center gap-4">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm">
+                <HelpCircle className="w-4 h-4 mr-2" />
+                How to Optimize
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Optimization Guide</DialogTitle>
+              </DialogHeader>
+              <OptimizationGuide />
+            </DialogContent>
+          </Dialog>
           <Button
             variant="outline"
             size="sm"
