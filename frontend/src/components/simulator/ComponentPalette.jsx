@@ -10,7 +10,8 @@ const ComponentPalette = () => {
     { name: 'Compute', key: 'compute', color: 'bg-blue-100 text-blue-700' },
     { name: 'Storage', key: 'storage', color: 'bg-amber-100 text-amber-700' },
     { name: 'Cache', key: 'cache', color: 'bg-pink-100 text-pink-700' },
-    { name: 'Async', key: 'async', color: 'bg-indigo-100 text-indigo-700' }
+    { name: 'Async', key: 'async', color: 'bg-indigo-100 text-indigo-700' },
+    { name: 'Deep Learning', key: 'deep_learning', color: 'bg-purple-100 text-purple-700' }
   ];
 
   const onDragStart = (event, component) => {
@@ -24,19 +25,18 @@ const ComponentPalette = () => {
   };
 
   return (
-    <div 
-      className={`bg-white border-r border-slate-200 overflow-y-auto transition-all duration-300 flex-shrink-0 ${
-        isCollapsed ? 'w-16' : 'w-64'
-      }`}
+    <div
+      className={`bg-white border-r border-slate-200 overflow-y-auto transition-all duration-300 flex-shrink-0 ${isCollapsed ? 'w-16' : 'w-64'
+        }`}
       style={{ minWidth: isCollapsed ? '4rem' : '16rem' }}
     >
       <div className="border-b border-slate-200">
         {isCollapsed ? (
           <div className="flex flex-col items-center py-4 gap-3">
-            <div 
+            <div
               className="text-sm font-bold text-slate-900 whitespace-nowrap"
-              style={{ 
-                writingMode: 'vertical-rl', 
+              style={{
+                writingMode: 'vertical-rl',
                 textOrientation: 'mixed',
                 transform: 'rotate(180deg)'
               }}
@@ -105,8 +105,8 @@ const ComponentPalette = () => {
                             {component.performance.maxRPS
                               ? `${(component.performance.maxRPS / 1000).toFixed(0)}K RPS`
                               : component.performance.maxReadQPS
-                              ? `${(component.performance.maxReadQPS / 1000).toFixed(0)}K QPS`
-                              : 'Scalable'}
+                                ? `${(component.performance.maxReadQPS / 1000).toFixed(0)}K QPS`
+                                : 'Scalable'}
                           </div>
                         </div>
                       </div>

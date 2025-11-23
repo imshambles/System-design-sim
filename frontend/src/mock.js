@@ -859,6 +859,330 @@ export const COMPONENT_SPECS = {
       vertical: true,
       autoScale: false
     }
+  },
+
+  // Deep Learning Components
+  gpu_cluster_a100: {
+    id: 'gpu_cluster_a100',
+    name: 'GPU Cluster (A100)',
+    type: 'gpu_training',
+    category: 'deep_learning',
+    icon: 'cpu',
+    performance: {
+      maxTrainingSamplesPerSec: 10000,
+      maxInferenceSamplesPerSec: 50000,
+      avgTrainingLatency: 100,
+      avgInferenceLatency: 10,
+      p99LatencyMultiplier: 2.0,
+      gpuMemoryGB: 80,
+      gpuCount: 8,
+      maxModelSize: '100GB',
+      supportsReplication: true,
+      cpuCores: 64,
+      memoryGB: 512,
+      baseAvailability: 0.999
+    },
+    cost: {
+      hourly: 32.77
+    },
+    scaling: {
+      horizontal: true,
+      vertical: true,
+      autoScale: true
+    }
+  },
+
+  tpu_pod: {
+    id: 'tpu_pod',
+    name: 'TPU Pod',
+    type: 'tpu_training',
+    category: 'deep_learning',
+    icon: 'zap',
+    performance: {
+      maxTrainingSamplesPerSec: 50000,
+      maxInferenceSamplesPerSec: 100000,
+      avgTrainingLatency: 50,
+      avgInferenceLatency: 5,
+      p99LatencyMultiplier: 1.8,
+      tpuMemoryGB: 128,
+      tpuCores: 256,
+      maxModelSize: '200GB',
+      supportsReplication: true,
+      cpuCores: 0,
+      memoryGB: 0,
+      baseAvailability: 0.9999
+    },
+    cost: {
+      hourly: 8.00
+    },
+    scaling: {
+      horizontal: true,
+      vertical: false,
+      autoScale: true
+    }
+  },
+
+  model_inference_server: {
+    id: 'model_inference_server',
+    name: 'Model Inference Server',
+    type: 'inference',
+    category: 'deep_learning',
+    icon: 'server',
+    performance: {
+      maxRPS: 10000,
+      avgReadLatency: 20,
+      p99LatencyMultiplier: 3.0,
+      maxConnections: 5000,
+      maxModelSize: '10GB',
+      batchSize: 32,
+      supportsReplication: false,
+      cpuCores: 16,
+      memoryGB: 64,
+      baseAvailability: 0.999
+    },
+    cost: {
+      hourly: 2.50
+    },
+    scaling: {
+      horizontal: true,
+      vertical: true,
+      autoScale: true
+    }
+  },
+
+  gpu_inference_cluster: {
+    id: 'gpu_inference_cluster',
+    name: 'GPU Inference Cluster',
+    type: 'gpu_inference',
+    category: 'deep_learning',
+    icon: 'zap',
+    performance: {
+      maxRPS: 50000,
+      avgReadLatency: 5,
+      p99LatencyMultiplier: 2.5,
+      maxConnections: 10000,
+      maxModelSize: '50GB',
+      batchSize: 128,
+      gpuMemoryGB: 24,
+      gpuCount: 4,
+      supportsReplication: false,
+      cpuCores: 32,
+      memoryGB: 256,
+      baseAvailability: 0.999
+    },
+    cost: {
+      hourly: 13.22
+    },
+    scaling: {
+      horizontal: true,
+      vertical: true,
+      autoScale: true
+    }
+  },
+
+  feature_store: {
+    id: 'feature_store',
+    name: 'Feature Store',
+    type: 'feature_management',
+    category: 'deep_learning',
+    icon: 'database',
+    performance: {
+      maxReadQPS: 100000,
+      maxWriteQPS: 50000,
+      avgReadLatency: 2,
+      avgWriteLatency: 5,
+      p99LatencyMultiplier: 2.0,
+      maxStorage: '10TB',
+      maxConnections: 10000,
+      supportsReplication: true,
+      cpuCores: 16,
+      memoryGB: 128,
+      baseAvailability: 0.9999
+    },
+    cost: {
+      hourly: 1.50,
+      storagePerGB: 0.15
+    },
+    scaling: {
+      horizontal: true,
+      vertical: true,
+      autoScale: true
+    }
+  },
+
+  model_registry: {
+    id: 'model_registry',
+    name: 'Model Registry',
+    type: 'model_management',
+    category: 'deep_learning',
+    icon: 'archive',
+    performance: {
+      maxReadQPS: 5000,
+      maxWriteQPS: 1000,
+      avgReadLatency: 10,
+      avgWriteLatency: 50,
+      p99LatencyMultiplier: 2.5,
+      maxStorage: '50TB',
+      maxConnections: 1000,
+      supportsReplication: true,
+      cpuCores: 8,
+      memoryGB: 32,
+      baseAvailability: 0.999
+    },
+    cost: {
+      hourly: 0.80,
+      storagePerGB: 0.10
+    },
+    scaling: {
+      horizontal: true,
+      vertical: true,
+      autoScale: false
+    }
+  },
+
+  data_versioning: {
+    id: 'data_versioning',
+    name: 'Data Versioning System',
+    type: 'data_management',
+    category: 'deep_learning',
+    icon: 'git-branch',
+    performance: {
+      maxReadQPS: 2000,
+      maxWriteQPS: 500,
+      avgReadLatency: 100,
+      avgWriteLatency: 200,
+      p99LatencyMultiplier: 3.0,
+      maxStorage: '100TB',
+      maxConnections: 500,
+      supportsReplication: true,
+      cpuCores: 8,
+      memoryGB: 32,
+      baseAvailability: 0.999
+    },
+    cost: {
+      hourly: 0.50,
+      storagePerGB: 0.08
+    },
+    scaling: {
+      horizontal: true,
+      vertical: true,
+      autoScale: false
+    }
+  },
+
+  ml_pipeline_orchestrator: {
+    id: 'ml_pipeline_orchestrator',
+    name: 'ML Pipeline Orchestrator',
+    type: 'orchestration',
+    category: 'deep_learning',
+    icon: 'workflow',
+    performance: {
+      maxPipelinesPerDay: 10000,
+      avgPipelineLatency: 1000,
+      p99LatencyMultiplier: 3.0,
+      maxConcurrentPipelines: 1000,
+      maxConnections: 2000,
+      supportsReplication: false,
+      cpuCores: 16,
+      memoryGB: 64,
+      baseAvailability: 0.999
+    },
+    cost: {
+      hourly: 1.20
+    },
+    scaling: {
+      horizontal: true,
+      vertical: true,
+      autoScale: true
+    }
+  },
+
+  experiment_tracking: {
+    id: 'experiment_tracking',
+    name: 'Experiment Tracking',
+    type: 'mlops',
+    category: 'deep_learning',
+    icon: 'bar-chart',
+    performance: {
+      maxWriteQPS: 10000,
+      maxReadQPS: 5000,
+      avgReadLatency: 50,
+      avgWriteLatency: 20,
+      p99LatencyMultiplier: 2.5,
+      maxStorage: '5TB',
+      maxConnections: 2000,
+      supportsReplication: true,
+      cpuCores: 8,
+      memoryGB: 32,
+      baseAvailability: 0.999
+    },
+    cost: {
+      hourly: 0.60,
+      storagePerGB: 0.12
+    },
+    scaling: {
+      horizontal: true,
+      vertical: true,
+      autoScale: true
+    }
+  },
+
+  model_monitoring: {
+    id: 'model_monitoring',
+    name: 'Model Monitoring Service',
+    type: 'monitoring',
+    category: 'deep_learning',
+    icon: 'activity',
+    performance: {
+      maxWriteQPS: 50000,
+      maxReadQPS: 10000,
+      avgReadLatency: 30,
+      avgWriteLatency: 10,
+      p99LatencyMultiplier: 2.5,
+      maxStorage: '10TB',
+      maxConnections: 5000,
+      supportsReplication: true,
+      cpuCores: 16,
+      memoryGB: 64,
+      baseAvailability: 0.9999
+    },
+    cost: {
+      hourly: 1.00,
+      storagePerGB: 0.10
+    },
+    scaling: {
+      horizontal: true,
+      vertical: true,
+      autoScale: true
+    }
+  },
+
+  edge_inference_device: {
+    id: 'edge_inference_device',
+    name: 'Edge Inference Device',
+    type: 'edge_inference',
+    category: 'deep_learning',
+    icon: 'smartphone',
+    performance: {
+      maxRPS: 100,
+      avgReadLatency: 50,
+      p99LatencyMultiplier: 2.0,
+      maxConnections: 10,
+      maxModelSize: '100MB',
+      powerConsumption: '5W',
+      supportsReplication: false,
+      cpuCores: 4,
+      memoryGB: 4,
+      baseAvailability: 0.99
+    },
+    cost: {
+      hourly: 0.05
+    },
+    scaling: {
+      horizontal: true,
+      vertical: false,
+      autoScale: false
+    }
   }
 };
 

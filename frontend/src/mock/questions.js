@@ -19,7 +19,7 @@ export const QUESTIONS = {
       storageLimit: '5TB'
     }
   },
-  
+
   pastebin: {
     id: 'pastebin',
     title: 'Design Pastebin',
@@ -769,5 +769,180 @@ export const QUESTIONS = {
       'interface',
       'factory_pattern'
     ]
+  },
+
+  // Deep Learning / ML Questions - Easy
+  ml_model_serving: {
+    id: 'ml_model_serving',
+    title: 'Design ML Model Serving API',
+    type: 'HLD',
+    difficulty: 'Easy',
+    description: 'Design a REST API for serving predictions from a trained ML model',
+    requirements: [
+      'Load and serve pre-trained models',
+      'Handle prediction requests with low latency',
+      'Support model versioning',
+      'Basic monitoring and logging'
+    ],
+    constraints: {
+      requestsPerSecond: '1K',
+      targetLatency: '100ms',
+      modelSize: '500MB',
+      availability: '99.9%'
+    }
+  },
+
+  image_classification: {
+    id: 'image_classification',
+    title: 'Design Image Classification Service',
+    type: 'HLD',
+    difficulty: 'Easy',
+    description: 'Build a service to classify uploaded images using a CNN model',
+    requirements: [
+      'Accept image uploads via API',
+      'Run inference using pre-trained model',
+      'Return classification results with confidence scores',
+      'Handle multiple image formats'
+    ],
+    constraints: {
+      dailyActiveUsers: '100K',
+      maxImageSize: '10MB',
+      inferenceLatency: '200ms',
+      supportedFormats: 'JPEG, PNG, WebP'
+    }
+  },
+
+  // Deep Learning / ML Questions - Medium
+  recommendation_system: {
+    id: 'recommendation_system',
+    title: 'Real-time Recommendation System',
+    type: 'HLD',
+    difficulty: 'Medium',
+    description: 'Design a real-time recommendation system like Netflix or Amazon',
+    requirements: [
+      'Generate personalized recommendations',
+      'Real-time feature computation',
+      'A/B testing infrastructure',
+      'Model retraining pipeline',
+      'Handle cold start problem'
+    ],
+    constraints: {
+      dailyActiveUsers: '10M',
+      recommendationLatency: '50ms',
+      modelUpdateFrequency: 'Daily',
+      itemCatalogSize: '1M'
+    }
+  },
+
+  fraud_detection: {
+    id: 'fraud_detection',
+    title: 'Real-time Fraud Detection System',
+    type: 'HLD',
+    difficulty: 'Medium',
+    description: 'Design a real-time ML-based fraud detection system for transactions',
+    requirements: [
+      'Real-time transaction scoring',
+      'Feature engineering pipeline',
+      'Model monitoring for drift',
+      'Low false positive rate',
+      'Explainable predictions'
+    ],
+    constraints: {
+      transactionsPerSecond: '50K',
+      scoringLatency: '10ms',
+      falsePositiveRate: '< 1%',
+      modelRetrainingFrequency: 'Weekly'
+    }
+  },
+
+  search_ranking: {
+    id: 'search_ranking',
+    title: 'ML-Powered Search Ranking',
+    type: 'HLD',
+    difficulty: 'Medium',
+    description: 'Design a machine learning powered search result ranking system',
+    requirements: [
+      'Index documents for search',
+      'ML-based ranking of results',
+      'Personalization based on user history',
+      'A/B testing for ranking models',
+      'Real-time feature serving'
+    ],
+    constraints: {
+      queriesPerSecond: '10K',
+      searchLatency: '100ms',
+      documentCorpusSize: '100M',
+      rankingModelLatency: '20ms'
+    }
+  },
+
+  // Deep Learning / ML Questions - Hard
+  llm_serving: {
+    id: 'llm_serving',
+    title: 'Large Language Model (LLM) Serving',
+    type: 'HLD',
+    difficulty: 'Hard',
+    description: 'Design infrastructure for serving GPT-like models at scale',
+    requirements: [
+      'Serve large language models (10B+ parameters)',
+      'Support streaming responses',
+      'Handle variable-length inputs/outputs',
+      'GPU resource optimization',
+      'Rate limiting and quota management',
+      'Multi-tenant isolation'
+    ],
+    constraints: {
+      requestsPerSecond: '10K',
+      modelSize: '50GB',
+      maxTokensPerRequest: '4096',
+      p99Latency: '2 seconds',
+      gpuUtilization: '> 80%'
+    }
+  },
+
+  autonomous_vehicle: {
+    id: 'autonomous_vehicle',
+    title: 'Autonomous Vehicle Perception Pipeline',
+    type: 'HLD',
+    difficulty: 'Hard',
+    description: 'Design real-time object detection and tracking for autonomous vehicles',
+    requirements: [
+      'Multi-sensor fusion (camera, LiDAR, radar)',
+      'Real-time object detection and tracking',
+      'Path planning integration',
+      'Edge inference on vehicle hardware',
+      'Model updates over-the-air',
+      'Safety-critical reliability'
+    ],
+    constraints: {
+      inferenceLatency: '50ms',
+      frameRate: '30 FPS',
+      detectionAccuracy: '> 99%',
+      powerBudget: '300W',
+      modelSize: '< 2GB'
+    }
+  },
+
+  personalized_feed: {
+    id: 'personalized_feed',
+    title: 'Personalized News Feed with ML',
+    type: 'HLD',
+    difficulty: 'Hard',
+    description: 'Design a personalized content feed like Facebook or Twitter with ML ranking',
+    requirements: [
+      'Real-time feed generation',
+      'Multi-objective ranking (engagement, relevance, diversity)',
+      'Feature store for user/content features',
+      'Online learning for model updates',
+      'A/B testing framework',
+      'Content moderation integration'
+    ],
+    constraints: {
+      dailyActiveUsers: '500M',
+      feedLoadTime: '200ms',
+      postsPerDay: '1B',
+      modelInferenceLatency: '10ms',
+      featureComputationLatency: '5ms'
+    }
   }
 };

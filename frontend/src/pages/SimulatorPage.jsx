@@ -67,8 +67,8 @@ const SimulatorPage = () => {
 
   // Callback for ReactFlow edge creation
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge({ 
-      ...params, 
+    (params) => setEdges((eds) => addEdge({
+      ...params,
       animated: true,
       style: { stroke: '#3b82f6', strokeWidth: 2 },
       type: 'smoothstep',
@@ -130,7 +130,8 @@ const SimulatorPage = () => {
       storage: '#fef3c7',
       cache: '#fce7f3',
       infrastructure: '#d1fae5',
-      async: '#e0e7ff'
+      async: '#e0e7ff',
+      deep_learning: '#f3e8ff'
     };
     return colors[category] || '#f3f4f6';
   };
@@ -182,10 +183,10 @@ const SimulatorPage = () => {
       console.error("Error running simulation:", error);
       setSimulationResults({
         analysis: "An error occurred while running the simulation. This could be due to:\n\n" +
-                 "1. Invalid API key\n" +
-                 "2. Network connectivity issues\n" +
-                 "3. Service unavailability\n\n" +
-                 "Please try again or check your API key in settings.",
+          "1. Invalid API key\n" +
+          "2. Network connectivity issues\n" +
+          "3. Service unavailability\n\n" +
+          "Please try again or check your API key in settings.",
         error: true
       });
     }
@@ -252,14 +253,14 @@ const SimulatorPage = () => {
                     <ScrollArea className={`${needsScroll ? `h-[${maxVisibleItems * itemHeight}px]` : ''}`}>
                       <div className={`py-1 ${!needsScroll ? 'h-fit' : ''}`}>
                         {filteredQuestions.map(question => (
-                          <SelectItem 
-                            key={question.id} 
+                          <SelectItem
+                            key={question.id}
                             value={question.id}
                             className="h-[40px]"
                           >
                             <div className="flex items-center justify-between w-full pr-4">
                               <span>{question.title}</span>
-                              <Badge 
+                              <Badge
                                 variant="outline"
                                 className={getDifficultyColor(question.difficulty)}
                               >
